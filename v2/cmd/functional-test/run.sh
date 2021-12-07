@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# reading os type from flags
+CURRENT_OS=$1
+
 echo 'Building functional-test binary'
 go build -o functional-test
 
@@ -12,4 +15,13 @@ go build -v -o nuclei github.com/projectdiscovery/nuclei/v2/cmd/nuclei
 echo $(pwd)
 echo $(ls)
 echo 'Starting Nuclei functional test'
-./functional-test -main ./nuclei -dev ./nuclei_dev -testcases testcases.txt
+
+if [ "${CURRENT_OS}" == "windows" ]
+then
+ echo 'Running on windows platform'
+ ./functional-test -main nuclei -dev nuclei_dev -testcases testcases.txt
+else
+ ./functional-test -main ./nuclei -dev ./nuclei_dev -testcases testcases.txt
+fi
+
+
