@@ -24,7 +24,8 @@ jobs:
       - name: Functional Tests
         run: |
           chmod +x run.sh
-          if [ "$RUNNER_OS" == "Windows" ]; then
+          if [ "$RUNNER_OS" == "Windows" ] 
+          then
               bash run.sh windows
           else
               bash run.sh
