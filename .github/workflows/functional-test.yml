@@ -7,8 +7,11 @@ on:
 
 jobs:  
   functional-linux:
-    name: Functional Test - linux
-    runs-on: ubuntu-latest
+    name: Functional Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -21,41 +24,9 @@ jobs:
       - name: Functional Tests
         run: |
           chmod +x run.sh
-          bash run.sh
-        working-directory: v2/cmd/functional-test
-  
-  functional-mac:
-    name: Functional Test - macos
-    runs-on: macos-latest
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Functional Tests
-        run: |
-          chmod +x run.sh
-          bash run.sh
-        working-directory: v2/cmd/functional-test
-
-  functional-windows:
-    name: Functional Test - windows
-    runs-on: windows-latest
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Functional Tests
-        run: |
-          chmod +x run.sh
-          bash run.sh windows
+          if [ "$RUNNER_OS" == "Windows" ]; then
+              bash run.sh windows
+          else
+              bash run.sh
+          fi
         working-directory: v2/cmd/functional-test
