@@ -28,8 +28,7 @@ jobs:
       - name: Integration Tests
         run:  |
               chmod +x run.sh
-              if [ "${CURRENT_OS}" == "windows" ] 
-              then
+              if [ "${CURRENT_OS}" == "windows" ]; then
                 bash run.sh windows
               else
                 bash run.sh
