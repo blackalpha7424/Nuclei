@@ -23,6 +23,7 @@ jobs:
 
       - name: Functional Tests
         run: |
+          CURRENT_OS=$1
           if [ "${CURRENT_OS}" == "windows" ]
           then
               chmod +x run.sh

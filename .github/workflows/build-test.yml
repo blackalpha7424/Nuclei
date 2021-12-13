@@ -27,6 +27,7 @@ jobs:
 
       - name: Integration Tests
         run:  |
+              CURRENT_OS=$1
               chmod +x run.sh
               if [ "${CURRENT_OS}" == "windows" ]
               then
