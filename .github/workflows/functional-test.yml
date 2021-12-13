@@ -23,7 +23,7 @@ jobs:
 
       - name: Functional Tests
         run: |
-          if ([ "${CURRENT_OS}" == "windows" ]); then
+          if [[ "${CURRENT_OS}" == "windows" ]]; then
               chmod +x run.sh
               bash run.sh windows
           else
