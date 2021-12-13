@@ -22,12 +22,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Functional Tests
-        run: |
-          chmod +x run.sh
-          if [ "${CURRENT_OS}" == "windows" ] 
-          then
-              bash run.sh windows
-          else
-              bash run.sh
-          fi
+        run:  |
+              chmod +x run.sh
+              if [ "${CURRENT_OS}" == "windows" ] 
+              then
+                bash run.sh windows
+              else
+                bash run.sh
+              fi
         working-directory: v2/cmd/functional-test
