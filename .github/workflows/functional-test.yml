@@ -23,13 +23,6 @@ jobs:
 
       - name: Functional Tests
         run: |
-          CURRENT_OS=$1
-          if [ "${CURRENT_OS}" == "windows" ]
-          then
-              chmod +x run.sh
-              bash run.sh windows
-          else
-              chmod +x run.sh
-              bash run.sh
-          fi    
+          chmod +x run.sh
+          bash run.sh ${{matrix.os}}
         working-directory: v2/cmd/functional-test
