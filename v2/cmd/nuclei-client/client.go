@@ -14,6 +14,7 @@ import (
 var nucleiClient *client.Client
 
 var noColor bool
+var noDebug bool
 
 // renderJSON renders an item to the stdout
 func renderJSON(item interface{}) error {
@@ -26,7 +27,9 @@ func renderJSON(item interface{}) error {
 	} else {
 		got = pretty.Color(pretty.Pretty(buf.Bytes()), nil)
 	}
-	os.Stdout.Write(got)
+	if !noDebug {
+		os.Stdout.Write(got)
+	}
 	return nil
 }
 
@@ -38,11 +41,12 @@ func main() {
 		&cli.StringFlag{Name: "url", Usage: "Base URL of the Nuclei Server"},
 		&cli.StringFlag{Name: "username", Usage: "Username of the Nuclei Server", Value: "user"},
 		&cli.StringFlag{Name: "password", Usage: "Password of the Nuclei Server", Value: "pass"},
+		&cli.BoolFlag{Name: "no-debug", Usage: "Disable debugging"},
 	}
 	// Initialize nuclei client before being used
 	app.Before = cli.BeforeFunc(func(ctx *cli.Context) error {
 		noColor = ctx.Bool("no-color")
-
+		noDebug = ctx.Bool("no-debug")
 		var opts []client.Option
 		if url := ctx.String("url"); url != "" {
 			opts = append(opts, client.WithBaseURL(url))

@@ -1,0 +1,38 @@
+name: 🧪 Nuclei Client Integration Test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+
+jobs:  
+  integration:
+    name: Nuclei Client Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Integration test
+        run: |
+          chmod +x run.sh
+          bash run.sh 
+        working-directory: v2/cmd/integration-test-client
+
+     # Service containers to run with `integration`
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
