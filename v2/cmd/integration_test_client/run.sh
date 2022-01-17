@@ -5,11 +5,11 @@ cleanup(){
 }
 cd ../nuclei-server
 go build
-mv nuclei-server ../integration-test-client/nuclei-server
+mv nuclei-server ../integration_test_client/nuclei-server
 cd ../nuclei-client
 go build
-mv nuclei-client ../integration-test-client/nuclei-client
-cd ../integration-test-client
+mv nuclei-client ../integration_test_client/nuclei-client
+cd ../integration_test_client
 go build
 cleanup
 #running nuclei api server
@@ -17,7 +17,7 @@ cleanup
 #delay the test cases
 sleep 2
 # #running tests
-./integration-test-client -url "http://localhost:8822/api/v1"
+./integration_test_client -url "http://localhost:8822/api/v1"
 
 if [ $? -eq 0 ]
 then

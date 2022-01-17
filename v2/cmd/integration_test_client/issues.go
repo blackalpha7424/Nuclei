@@ -42,6 +42,9 @@ func (t UpdateIssues) Execute(cmd exec.Cmd) error {
 	}
 	items := []client.GetIssuesResponse{}
 	json.Unmarshal([]byte(result), &items)
+	if err := NotEmptyArray(len(items)); err != nil {
+		return err
+	}
 	for _, item := range items {
 		result, err = RunNucleiClientWithResult(cmd, "issues", "update", "-id", fmt.Sprint(item.ID))
 		if err != nil {
@@ -64,6 +67,9 @@ func (t DeleteIssues) Execute(cmd exec.Cmd) error {
 	}
 		items := []client.GetIssuesResponse{}
 		json.Unmarshal([]byte(result), &items)
+		if err := NotEmptyArray(len(items)); err != nil {
+			return err
+		}
 		for _, item := range items {
 			result, err := RunNucleiClientWithResult(cmd, "scans", "delete", "-id", fmt.Sprint(item.ID))
 			if err != nil {

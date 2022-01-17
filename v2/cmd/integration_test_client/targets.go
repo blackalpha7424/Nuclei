@@ -38,14 +38,12 @@ func (t getTargets) Execute(cmd exec.Cmd) error {
 type addTargets struct{}
 
 func (t addTargets) Execute(cmd exec.Cmd) error {
-	result, err := RunNucleiClientWithResult(cmd, "targets", "add", "-filepath", "./test-data/contents.txt", "-name", "nuclei-templates", "-path", "httptarget")
+	// /result, err := RunNucleiClientWithResult(cmd, "targets", "add", "-filepath", "./test-data/contents.txt", "-name", "nuclei-templates", "-path", "httptarget")
+	result, err := RunNucleiClientWithResult(cmd, "targets", "add", "-filepath", "./test-data/contents.txt", "-name", "./test-data/contents.txt", "-path", "./test-data/contents.txt")
 	if err != nil {
 		return err
 	}
-	if len(result) == 0 {
-		return errors.New("empty data return from server")
-	}
-	return nil
+	return NotEmpty(result)
 }
 
 type updateTargets struct{}
@@ -57,6 +55,9 @@ func (t updateTargets) Execute(cmd exec.Cmd) error {
 	}
 	items := []client.GetTargetsResponse{}
 	json.Unmarshal([]byte(result), &items)
+	if err := NotEmptyArray(len(items)); err != nil {
+		return err
+	}
 	for _, item := range items {
 		result, err = RunNucleiClientWithResult(cmd, "targets", "update", "-filepath", "./test-data/contents.txt", "-id", fmt.Sprint(item.ID))
 		if err != nil {
@@ -79,15 +80,18 @@ func (t deleteTargets) Execute(cmd exec.Cmd) error {
 	}
 	items := []client.GetTargetsResponse{}
 	json.Unmarshal([]byte(result), &items)
-	for _, item := range items {
-	result, err := RunNucleiClientWithResult(cmd, "targets", "delete", "-id", fmt.Sprint(item.ID))
-	if err != nil {
+	if err := NotEmptyArray(len(items)); err != nil {
 		return err
 	}
-	if len(result) == 0 {
-		return errors.New("empty data return from server")
+	for _, item := range items {
+		result, err := RunNucleiClientWithResult(cmd, "targets", "delete", "-id", fmt.Sprint(item.ID))
+		if err != nil {
+			return err
+		}
+		if len(result) == 0 {
+			return errors.New("empty data return from server")
+		}
 	}
-}
 	return nil
 }
 
@@ -100,14 +104,17 @@ func (t contentsTargets) Execute(cmd exec.Cmd) error {
 	}
 	items := []client.GetTargetsResponse{}
 	json.Unmarshal([]byte(result), &items)
-	for _, item := range items {
-	result, err := RunNucleiClientWithResult(cmd, "targets", "contents", "-id", fmt.Sprint(item.ID))
-	if err != nil {
+	if err := NotEmptyArray(len(items)); err != nil {
 		return err
 	}
-	if len(result) == 0 {
-		return errors.New("empty data return from server")
+	for _, item := range items {
+		result, err := RunNucleiClientWithResult(cmd, "targets", "contents", "-id", fmt.Sprint(item.ID))
+		if err != nil {
+			return err
+		}
+		if len(result) == 0 {
+			return errors.New("empty data return from server")
+		}
 	}
-}
-		return nil
+	return nil
 }

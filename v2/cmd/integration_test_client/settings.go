@@ -55,6 +55,9 @@ func (t UpdateSettings) Execute(cmd exec.Cmd) error {
 	}
 	items := []client.GetSettingsResponse{}
 	json.Unmarshal([]byte(result), &items)
+	if err := NotEmptyArray(len(items)); err != nil {
+		return err
+	}
 	for _, item := range items {
 		result, err = RunNucleiClientWithResult(cmd, "settings", "update", "-filepath", "./test-data/template.yaml", "-name",fmt.Sprint(item.Name), "-type", "int")
 		if err != nil {

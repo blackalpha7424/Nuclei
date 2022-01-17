@@ -21,7 +21,7 @@ var (
 func main() {
 	flag.Parse()
 	tests := orderedmap.New()
-	tests.Set("templates", templatesTestCases)
+    tests.Set("templates", templatesTestCases)
 	tests.Set("targets", targetsTestCases)
 	tests.Set("scans", scansTestCases)
 	tests.Set("settings",  settingsTestCases)

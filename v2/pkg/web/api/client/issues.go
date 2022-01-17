@@ -172,6 +172,8 @@ func (c *IssuesService) UpdateIssue(ID int64, req UpdateIssueRequest) error {
 	if err != nil {
 		return errors.Wrap(err, "could not make http request")
 	}
+	//missing authentication code
+	httpreq.SetBasicAuth(c.username, c.password)
 
 	resp, err := c.httpclient.Do(httpreq)
 	if err != nil {

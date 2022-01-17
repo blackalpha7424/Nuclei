@@ -167,6 +167,8 @@ func (c *TargetsService) UpdateTarget(req UpdateTargetRequest) error {
 		return errors.Wrap(err, "could not make http request")
 	}
 	httpreq.Header.Set("Content-Type", writer.FormDataContentType())
+	//missing authentication code
+	httpreq.SetBasicAuth(c.username, c.password)
 
 	resp, err := c.httpclient.Do(httpreq)
 	if err != nil {
