@@ -165,13 +165,13 @@ func printCallback(stats clistats.StatisticsClient) {
 	builder.WriteString(clistats.String(errors))
 
 	builder.WriteString(" | Requests: ")
-	builder.WriteString(clistats.String(requests))
+	builder.WriteString(clistats.String(requests + errors))
 	builder.WriteRune('/')
 	builder.WriteString(clistats.String(total))
 	builder.WriteRune(' ')
 	builder.WriteRune('(')
 	//nolint:gomnd // this is not a magic number
-	builder.WriteString(clistats.String(uint64(float64(requests) / float64(total) * 100.0)))
+	builder.WriteString(clistats.String(uint64(float64(requests+errors) / float64(total) * 100.0)))
 	builder.WriteRune('%')
 	builder.WriteRune(')')
 	builder.WriteRune('\n')
