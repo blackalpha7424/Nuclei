@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 
 func getTemplatePath() string {
 	home, _ := os.UserHomeDir()
-	fmt.Println(home)
 	return filepath.Join(home, "nuclei-templates")
 }
 
@@ -61,8 +61,16 @@ type absolutePathTemplateTest struct{}
 func (h *absolutePathTemplateTest) Execute(filePath string) error {
 	var routerErr error
 
+	if _, err := os.Stat(filePath); err == nil {
+		// path/to/whatever exists
+		fmt.Println("------------EXIST-------------")
+
+	} else if errors.Is(err, os.ErrNotExist) {
+		// path/to/whatever does *not* exist
+		fmt.Println("------------NO EXIST-------------")
+
+	}
 	results, err := testutils.RunNucleiTemplateAndGetResults(filePath, "hackerone.com", debug)
-	fmt.Println(filePath)
 	if err != nil {
 		return err
 	}
