@@ -10,6 +10,7 @@ import (
 
 func getTemplatePath() string {
 	home, _ := os.UserHomeDir()
+	fmt.Println(home)
 	return filepath.Join(home, "nuclei-templates")
 }
 
@@ -19,7 +20,7 @@ var templatesPathTestCases = map[string]testutils.TestCase{
 	//relative path
 	"dns/cname-fingerprint.yaml": &relativePathTemplateTest{},
 	//absolute path
-	fmt.Sprintf("%v/dns/cname-fingerprint.yaml", getTemplatePath()): &absolutePathTemplateTest{},
+	fmt.Sprintf("%v/dns/nameserver-fingerprint.yaml", getTemplatePath()): &absolutePathTemplateTest{},
 }
 
 type cwdTemplateTest struct{}
@@ -60,7 +61,8 @@ type absolutePathTemplateTest struct{}
 func (h *absolutePathTemplateTest) Execute(filePath string) error {
 	var routerErr error
 
-	results, err := testutils.RunNucleiTemplateAndGetResults(filePath, "8x8exch02.8x8.com", debug)
+	results, err := testutils.RunNucleiTemplateAndGetResults(filePath, "hackerone.com", debug)
+	fmt.Println(filePath)
 	if err != nil {
 		return err
 	}
