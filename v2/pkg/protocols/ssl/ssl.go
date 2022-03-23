@@ -107,6 +107,7 @@ func (request *Request) GetID() string {
 func (request *Request) ExecuteWithResults(input string, dynamicValues, previous output.InternalEvent, callback protocols.OutputEventCallback) error {
 	address, err := getAddress(input)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(1)
 		return nil
 	}
 	hostname, port, _ := net.SplitHostPort(address)
@@ -176,6 +177,7 @@ func (request *Request) ExecuteWithResults(input string, dynamicValues, previous
 		requestOptions.Progress.IncrementFailedRequestsBy(1)
 		return errors.Wrap(err, "could not connect to server")
 	}
+	requestOptions.Progress.IncrementRequests()
 	defer conn.Close()
 	_ = conn.SetReadDeadline(time.Now().Add(time.Duration(requestOptions.Options.Timeout) * time.Second))
 

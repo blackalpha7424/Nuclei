@@ -164,6 +164,7 @@ func (request *Request) executeRequestWithPayloads(input, hostname string, dynam
 	}
 	parsed, err := url.Parse(input)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(1)
 		return errors.Wrap(err, "could not parse input url")
 	}
 	payloadValues["Hostname"] = parsed.Host

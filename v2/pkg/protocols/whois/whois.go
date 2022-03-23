@@ -88,8 +88,10 @@ func (request *Request) ExecuteWithResults(input string, dynamicValues, previous
 	rdapReq.Server = request.parsedServerURL
 	res, err := request.client.Do(rdapReq)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(1)
 		return errors.Wrap(err, "could not make whois request")
 	}
+	request.options.Progress.IncrementRequests()
 	gologger.Verbose().Msgf("Sent WHOIS request to %s", query)
 	if request.options.Options.Debug || request.options.Options.DebugRequests {
 		gologger.Debug().Msgf("[%s] Dumped WHOIS request for %s", request.options.TemplateID, query)

@@ -44,7 +44,7 @@ func (request *Request) ExecuteWithResults(input string, metadata /*TODO review 
 	}
 	if err != nil {
 		request.options.Output.Request(request.options.TemplatePath, input, request.Type().String(), err)
-		request.options.Progress.IncrementFailedRequestsBy(1)
+		request.options.Progress.IncrementFailedRequestsBy(int64(len(request.Address)))
 		return errors.Wrap(err, "could not get address from url")
 	}
 
@@ -156,6 +156,7 @@ func (request *Request) executeRequestWithPayloads(variables map[string]interfac
 
 		if varErr := expressions.ContainsUnresolvedVariables(string(finalData)); varErr != nil {
 			gologger.Warning().Msgf("[%s] Could not make network request for %s: %v\n", request.options.TemplateID, actualAddress, varErr)
+			request.options.Progress.IncrementFailedRequestsBy(1)
 			return nil
 		}
 		if _, err := conn.Write(finalData); err != nil {

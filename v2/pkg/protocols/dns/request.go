@@ -45,6 +45,7 @@ func (request *Request) ExecuteWithResults(input string, metadata /*TODO review 
 	dnsClient := request.dnsClient
 	if varErr := expressions.ContainsUnresolvedVariables(request.Resolvers...); varErr != nil {
 		if dnsClient, varErr = request.getDnsClient(request.options, metadata); varErr != nil {
+			request.options.Progress.IncrementFailedRequestsBy(1)
 			gologger.Warning().Msgf("[%s] Could not make dns request for %s: %v\n", request.options.TemplateID, domain, varErr)
 			return nil
 		}
@@ -52,6 +53,7 @@ func (request *Request) ExecuteWithResults(input string, metadata /*TODO review 
 
 	requestString := compiledRequest.String()
 	if varErr := expressions.ContainsUnresolvedVariables(requestString); varErr != nil {
+		request.options.Progress.IncrementFailedRequestsBy(1)
 		gologger.Warning().Msgf("[%s] Could not make dns request for %s: %v\n", request.options.TemplateID, domain, varErr)
 		return nil
 	}
@@ -67,6 +69,7 @@ func (request *Request) ExecuteWithResults(input string, metadata /*TODO review 
 		request.options.Progress.IncrementFailedRequestsBy(1)
 	}
 	if response == nil {
+		request.options.Progress.IncrementFailedRequestsBy(1)
 		return errors.Wrap(err, "could not send dns request")
 	}
 	request.options.Progress.IncrementRequests()

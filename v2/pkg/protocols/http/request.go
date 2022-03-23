@@ -54,15 +54,18 @@ func (request *Request) executeRaceRequest(reqURL string, previous output.Intern
 
 	inputData, payloads, ok := generator.nextValue()
 	if !ok {
+		request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 		return nil
 	}
 	requestForDump, err := generator.Make(reqURL, inputData, payloads, nil)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 		return err
 	}
 	request.setCustomHeaders(requestForDump)
 	dumpedRequest, err := dump(requestForDump, reqURL)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 		return err
 	}
 	if request.options.Options.Debug || request.options.Options.DebugRequests {
@@ -80,6 +83,7 @@ func (request *Request) executeRaceRequest(reqURL string, previous output.Intern
 		}
 		generatedRequest, err := generator.Make(reqURL, inputData, payloads, nil)
 		if err != nil {
+			request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 			return err
 		}
 		generatedRequests = append(generatedRequests, generatedRequest)
@@ -119,14 +123,15 @@ func (request *Request) executeParallelHTTP(reqURL string, dynamicValues output.
 	for {
 		inputData, payloads, ok := generator.nextValue()
 		if !ok {
+			request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 			break
 		}
 		generatedHttpRequest, err := generator.Make(reqURL, inputData, payloads, dynamicValues)
 		if err != nil {
+			request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 			if err == io.EOF {
 				break
 			}
-			request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 			return err
 		}
 		if reqURL == "" {
@@ -159,6 +164,7 @@ func (request *Request) executeTurboHTTP(reqURL string, dynamicValues, previous 
 	// need to extract the target from the url
 	URL, err := url.Parse(reqURL)
 	if err != nil {
+		request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 		return err
 	}
 
@@ -242,10 +248,10 @@ func (request *Request) ExecuteWithResults(reqURL string, dynamicValues, previou
 			hasInteractMatchers := interactsh.HasMatchers(request.CompiledOperators)
 			generatedHttpRequest, err := generator.Make(reqURL, data, payloads, dynamicValue)
 			if err != nil {
+				request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 				if err == io.EOF {
 					return true, nil
 				}
-				request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 				return true, err
 			}
 			hasInteractMarkers := interactsh.HasMarkers(data) || len(generatedHttpRequest.interactshURLs) > 0
@@ -254,6 +260,7 @@ func (request *Request) ExecuteWithResults(reqURL string, dynamicValues, previou
 			}
 			// Check if hosts keep erroring
 			if request.options.HostErrorsCache != nil && request.options.HostErrorsCache.Check(reqURL) {
+				request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 				return true, nil
 			}
 			var gotMatches bool
@@ -280,9 +287,11 @@ func (request *Request) ExecuteWithResults(reqURL string, dynamicValues, previou
 
 			// If a variable is unresolved, skip all further requests
 			if err == errStopExecution {
+				request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 				return true, nil
 			}
 			if err != nil {
+				request.options.Progress.IncrementFailedRequestsBy(int64(generator.Total()))
 				if request.options.HostErrorsCache != nil && request.options.HostErrorsCache.CheckError(err) {
 					request.options.HostErrorsCache.MarkFailed(reqURL)
 				}
